@@ -1,0 +1,51 @@
+syntax = "proto3";
+package sensorrec;
+
+message Header {
+  enum Type {
+    UNKNOWN = 0;
+    LOCATION = 1;
+    NMEA = 2;
+    ACCEL = 3;
+    GYRO = 4;
+    MAG = 5;
+    OTHER = 6;
+  }
+  Type type = 1;
+  int64 timestamp_nanos = 2;
+}
+
+message LocationRecord {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+  float accuracy = 4;
+  float speed = 5;
+  float bearing = 6;
+  int64 wallclock_millis = 7;
+}
+
+message NmeaRecord {
+  string nmea = 1;
+}
+
+message SensorVec3 {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}
+
+message SensorRecord {
+  repeated SensorVec3 values = 1;
+  int32 sensor_type = 2;
+  int32 accuracy = 3;
+}
+
+message Frame {
+  Header header = 1;
+  oneof payload {
+    LocationRecord location = 2;
+    NmeaRecord nmea = 3;
+    SensorRecord sensor = 4;
+  }
+}

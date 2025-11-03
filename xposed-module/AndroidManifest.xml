@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.replay">
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30"/>
+    <application android:label="SensorRec Xposed Module"/>
+</manifest>

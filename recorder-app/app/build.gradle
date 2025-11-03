@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+android {
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.example.sensorrec"
+        minSdk 21
+        targetSdk 34
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+        ndk {
+            abiFilters 'armeabi-v7a','arm64-v8a','x86'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
+        }
+    }
+    buildTypes {
+        release { minifyEnabled false }
+    }
+    namespace 'com.example.sensorrec'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+    implementation 'com.google.protobuf:protobuf-javalite:3.24.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.24.0" }
+    generatedFilesBaseDir = "$projectDir/src/main/java"
+    plugins { }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins { java {} }
+        }
+    }
+}

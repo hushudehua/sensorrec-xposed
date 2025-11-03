@@ -1,0 +1,6 @@
+id=sensorrec
+name=SensorRec Daemon Starter
+version=1.0
+versionCode=1
+author=you
+description=Starts sensorrec native daemon on boot (example)
