@@ -2,11 +2,9 @@ name: Build Xposed Module
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
@@ -28,8 +26,17 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleRelease
 
-    - name: Sign APK (optional, if you set up keystore secrets)
-      if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+    - name: Check if keystore secret exists
+      id: check_secrets
+      run: |
+        if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+          echo "has_keystore=false" >> $GITHUB_ENV
+        else
+          echo "has_keystore=true" >> $GITHUB_ENV
+        fi
+
+    - name: Sign APK (only if keystore exists)
+      if: env.has_keystore == 'true'
       env:
         KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -37,10 +44,7 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
         echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
-        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore keystore.jks -storepass "$KEYSTORE_PASSWORD" \
-          -keypass "$KEY_PASSWORD" \
-          app/build/outputs/apk/release/app-release-unsigned.apk "$KEY_ALIAS"
+        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256           -keystore keystore.jks -storepass "$KEYSTORE_PASSWORD"           -keypass "$KEY_PASSWORD"           app/build/outputs/apk/release/app-release-unsigned.apk "$KEY_ALIAS"
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
